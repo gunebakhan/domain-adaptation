@@ -50,4 +50,6 @@ Output
 ```
 
 ## Example
-Notebook file is an example of how using segmentation with domain adaptation based on GRL
+Notebook files are examples of domain adaptive segmentation methods.
+DAUNet is domain adaptive unet model with GRL.
+Siamese GAN is another method for domain adaptation using UNet for segmentation.
