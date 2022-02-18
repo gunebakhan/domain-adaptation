@@ -5,7 +5,7 @@ import numpy as np
 class DataGenerator(keras.utils.Sequence):
     'Generate data for keras'
     def __init__(self, image_paths, batch_size, augment, shuffle, normalize=False, 
-                minimum=0, maximum=0, lstm=False):
+                minimum=0, maximum=0, lstm=False, gan=False):
         self.image_paths = image_paths
         self.batch_size = batch_size
         self.augment = augment
@@ -14,6 +14,7 @@ class DataGenerator(keras.utils.Sequence):
         self.minimum = minimum
         self.maximum = maximum
         self.lstm = lstm
+        self.gan = gan
         self.on_epoch_end()
 
     def __len__(self):
@@ -47,6 +48,11 @@ class DataGenerator(keras.utils.Sequence):
         labels = []
         for img_lbl in imgs_lbls:
             image = img_lbl[:12, :, :]
+
+            # if image is translated and between [-1, 1]
+            if self.gan:
+                image = (image + 1) / 2
+
             if not self.lstm:
                 image = np.moveaxis(image, 0, -1)
             images.append(image)
@@ -69,3 +75,5 @@ class DataGenerator(keras.utils.Sequence):
     
 
         return imgs_lbls
+
+

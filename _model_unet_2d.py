@@ -262,13 +262,13 @@ def unet_2d(input_size, filter_num, n_labels, stack_num_down=2, stack_num_up=2,
     
     if siamese:
         bottle_neck, X1, X2 = unet_2d_base(IN, filter_num, stack_num_down=stack_num_down, stack_num_up=stack_num_up, 
-                     activation=activation, batch_norm=batch_norm, pool=pool, unpool=unpool, 
-                     backbone=backbone, weights=weights, freeze_backbone=freeze_backbone, 
-                     conv_type=conv_type, freeze_batch_norm=freeze_backbone, name=name)
+                     activation=activation, batch_norm=batch_norm, pool=pool, unpool=unpool,
+                     conv_type=conv_type, name=name)
+                     
     
         # output layer
         OUT = CONV_output(X1, n_labels, kernel_size=1, activation=output_activation, name='{}_output'.format(name))
-        DOMAIN_OUTPUT = domain_classifier(X1)
+        DOMAIN_OUTPUT = domain_adaptation(X1)
         RECONST = CONV_output(X2, 12, kernel_size=1, activation="Sigmoid", name='{}_output'.format('reconstruction'))
     
     
@@ -284,9 +284,8 @@ def unet_2d(input_size, filter_num, n_labels, stack_num_down=2, stack_num_up=2,
         
     # base    
     bottle_neck, X = unet_2d_base(IN, filter_num, stack_num_down=stack_num_down, stack_num_up=stack_num_up, 
-                     activation=activation, batch_norm=batch_norm, pool=pool, unpool=unpool, 
-                     backbone=backbone, weights=weights, freeze_backbone=freeze_backbone, 
-                     conv_type=conv_type, freeze_batch_norm=freeze_backbone, name=name)
+                     activation=activation, batch_norm=batch_norm, pool=pool, unpool=unpool,
+                     conv_type=conv_type, name=name)
     
     # output layer
     OUT = CONV_output(X, n_labels, kernel_size=1, activation=output_activation, name='{}_output'.format(name))

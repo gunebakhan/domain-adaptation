@@ -1,4 +1,5 @@
 import tensorflow.keras.backend as K
+import tensorflow as tf
 
 
 def weightedLoss(originalLossFunc, weightsList):
@@ -38,6 +39,43 @@ def weightedLoss(originalLossFunc, weightsList):
         loss = originalLossFunc(true,pred) 
         loss = loss * weightMultiplier
 
+        return loss
+    return lossFunc
+
+
+def IgnoreCaseWeightedLoss(originalLossFunc, weightsList, ignore_label=4):
+
+    def lossFunc(true, pred):
+
+        axis = -1 #if channels last 
+        #axis=  1 #if channels first
+
+
+        #argmax returns the index of the element with the greatest value
+        #done in the class axis, it returns the class index    
+        classSelectors = K.argmax(true, axis=axis) 
+            #if your loss is sparse, use only true as classSelectors
+
+        # Find indices which don't contain class 4 labels
+        indices = tf.where(K.not_equal(classSelectors, ignore_label))
+        classSelectors = tf.gather_nd(classSelectors, indices)
+        # true = tf.gather_nd(true, indices)
+        pred = tf.gather_nd(pred, indices)
+
+        # Create weight tensor corresponds to each label
+        weightMultiplier = deep_copy(classSelectors)
+        weightMultiplier = tf.cast(weightMultiplier, dtype=tf.float32)
+        for i, weight in enumerate(weightsList):
+            weightMultiplier = tf.where(K.equal(weightMultiplier, i), weight, weightMultiplier)
+
+        #make sure your originalLossFunc only collapses the class axis
+        #you need the other axes intact to multiply the weights tensor
+        # true = keras.utils.to_categorical(K.argmax(true, axis=-1), num_classes=4)
+        true = keras.utils.to_categorical(classSelectors, num_classes=4)
+        loss = originalLossFunc(true, pred) 
+        loss = loss * weightMultiplier
+        # loss = K.mean(K.sum(loss, axis=(1, 2)))
+        # return K.mean(loss)
         return loss
     return lossFunc
 
