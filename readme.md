@@ -52,4 +52,5 @@ Output
 ## Example
 Notebook files are examples of domain adaptive segmentation methods.
 DAUNet is domain adaptive unet model with GRL.
+EnhancedDAUnet is domain adaptive unet model with GRL with ignore label
 Siamese GAN is another method for domain adaptation using UNet for segmentation.
